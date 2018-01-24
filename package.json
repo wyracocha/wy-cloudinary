@@ -1,0 +1,16 @@
+{
+  "name": "imageUpload",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@wyracocha/wy-env": "^1.0.1",
+    "boom": "^7.1.1",
+    "cloudinary": "^1.9.1",
+    "hapi": "^17.2.0",
+    "hapi-swagger": "^9.0.2",
+    "inert": "^5.1.0",
+    "joi": "^13.1.1",
+    "vision": "^5.3.1"
+  }
+}
