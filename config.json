@@ -1,8 +1,0 @@
-{
-  "development": {
-    "PORT": 4040,
-    "CLOUDINARY_NAME": "wyracocha-com",
-    "CLOUDINARY_API_KEY": "116539467623123",
-    "CLOUDINARY_API_SECRET": "Ugm47dGyuZeEz2h5ibbNdwFPuBg"
-  }
-}
