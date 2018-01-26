@@ -1,16 +1,10 @@
 'use strict'
 let Cloudinary = require('cloudinary')
 const Boom = require('boom')
-const {promisify} = require('util')
-const Joi = require('joi')
 const Response = require('./responses')
 const Schema = require('./schemas')
-// -- configuration
-Cloudinary.config({
-  cloud_name: 'wyracocha-com', //process.env.CLOUDINARY_NAME,
-  api_key: '116539467623123', // process.env.CLOUDINARY_API_KEY, 
-  api_secret: 'Ugm47dGyuZeEz2h5ibbNdwFPuBg' // process.env.CLOUDINARY_API_SECRET
-})
+const Uuid = require('node-uuid')
+
 async function Upload (req, opts) {
   try {
     return Cloudinary.uploader.upload(req.payload.file, null, opts, function (err, uploaded) {
@@ -30,7 +24,7 @@ async function Upload (req, opts) {
     })
   }
 }
-module.exports = (Server) => {
+module.exports = (Server) => {
   Server.route({
     method: 'POST',
     path: '/',
@@ -49,13 +43,15 @@ module.exports = (Server) => {
       handler: async (req, h) => {
         try {
           let opts = {}
-          
-          req.payload.folder ? opts['folder'] = req.payload.folder: void(0)
-          req.payload.tags ? opts['tags'] = req.payload.tags: void(0)
-  
+
+          req.payload.folder ? opts['folder'] = req.payload.folder : void (0)
+          req.payload.tags ? opts['tags'] = req.payload.tags : void (0)
+
           opts['resource_type'] = req.payload.resource_type || 'image'
+          opts.unique_filename = false
+          opts.public_id = Uuid.v1()
           // let Upload = promisify(Cloudinary.uploader.upload)
-          let uploaded = new Response.uploaded( await Upload(req, opts) )
+          let uploaded = new Response.Uploaded(await Upload(req, opts))
 
           return uploaded
         } catch (e) {
@@ -63,7 +59,7 @@ module.exports = (Server) => {
         }
       },
       response: {
-        failAction: (request, reply, source, error) => {
+        failAction: (request, h, source, error) => {
           return h.response({
             message: source.message
           }).code(400)
