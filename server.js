@@ -35,11 +35,12 @@ async function RegisterSwagger (Server) {
 }
 async function Gugure () {
   try {
+    process.env.NODE_ENV === 'production' ? void (0) : await WyEnv()
     Server = Hapi.server({
       port: process.env.PORT,
       host: '0.0.0.0'
     })
-    process.env.NODE_ENV !== 'production' ? await WyEnv() && await RegisterSwagger(Server) : void (0)
+    process.env.NODE_ENV !== 'production' ? await RegisterSwagger(Server) : void (0)
     Cloudinary.config({
       cloud_name: process.env.CLOUDINARY_NAME,
       api_key: process.env.CLOUDINARY_API_KEY,
