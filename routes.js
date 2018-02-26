@@ -7,7 +7,7 @@ const Uuid = require('node-uuid')
 
 async function Upload (req, opts) {
   try {
-    return Cloudinary.uploader.upload(req.payload.file.path, null, opts, function (err, uploaded) {
+    return Cloudinary.uploader.upload(req.payload.file, null, opts, function (err, uploaded) {
       if (err) {
         return new Promise((resolve, reject) => {
           reject(err)
@@ -32,12 +32,13 @@ module.exports = (Server) => {
       description: 'Upload and image in base64 format',
       notes: 'Return the uploaded object info',
       tags: ['api', 'image'],
-
+/*
       plugins: {
         'hapi-swagger': {
           payloadType: 'form'
         }
       },
+*/
       validate: {
         payload: Schema.payload,
         failAction: (request, h, source, error) => {
@@ -65,11 +66,13 @@ module.exports = (Server) => {
           return Boom.internal(e.message)
         }
       },
+      /*
       payload: {
         maxBytes: 209715200,
         output: 'file',
         parse: true
       },
+      */
       response: {
         failAction: (request, h, source, error) => {
           return h.response({
