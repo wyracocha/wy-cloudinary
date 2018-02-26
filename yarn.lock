@@ -338,6 +338,10 @@ nigel@3.x.x:
     hoek "5.x.x"
     vise "3.x.x"
 
+node-uuid@^1.4.8:
+  version "1.4.8"
+  resolved "https://registry.yarnpkg.com/node-uuid/-/node-uuid-1.4.8.tgz#b040eb0923968afabf8d32fb1f17f1167fdab907"
+
 ono@^4.0.3:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/ono/-/ono-4.0.3.tgz#b36050f71b02841bfb59f368deab8b07375e2219"
