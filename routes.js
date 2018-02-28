@@ -1,22 +1,30 @@
 'use strict'
-let Cloudinary = require('cloudinary')
+const AWS = require('aws-sdk')
 const Boom = require('boom')
 const Response = require('./responses')
 const Schema = require('./schemas')
 const Uuid = require('node-uuid')
+const {promisify} = require('util')
+
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_KEY
+})
+var s3 = new AWS.S3()
+const PutObject = promisify(s3.putObject.bind(s3))
 
 async function Upload (req, opts) {
   try {
-    return Cloudinary.uploader.upload(req.payload.file, null, opts, function (err, uploaded) {
-      if (err) {
-        return new Promise((resolve, reject) => {
-          reject(err)
-        })
-      } else {
-        return new Promise((resolve, reject) => {
-          resolve(uploaded)
-        })
-      }
+    var base64data = Buffer.from(req.payload.file, 'binary')
+    let filename = `${Uuid.v1()}.${req.payload.ext}`
+    await PutObject({
+      Bucket: 'porta-inversiones',
+      Key: filename,
+      Body: base64data,
+      ACL: 'public-read'
+    })
+    return new Promise((resolve, reject) => {
+      resolve({filename})
     })
   } catch (e) {
     return new Promise((resolve, reject) => {
@@ -32,13 +40,11 @@ module.exports = (Server) => {
       description: 'Upload and image in base64 format',
       notes: 'Return the uploaded object info',
       tags: ['api', 'image'],
-/*
       plugins: {
         'hapi-swagger': {
           payloadType: 'form'
         }
       },
-*/
       validate: {
         payload: Schema.payload,
         failAction: (request, h, source, error) => {
@@ -49,30 +55,18 @@ module.exports = (Server) => {
       },
       handler: async (req, h) => {
         try {
-          let opts = {}
-
-          req.payload.folder ? opts['folder'] = req.payload.folder : void (0)
-          req.payload.tags ? opts['tags'] = req.payload.tags : void (0)
-
-          opts['resource_type'] = req.payload.resource_type || 'image'
-          opts.unique_filename = false
-          opts.public_id = Uuid.v1()
-          // let Upload = promisify(Cloudinary.uploader.upload)
-          const U = await Upload(req, opts)
+          const U = await Upload(req)
           let uploaded = new Response.Uploaded(U)
-
           return uploaded
         } catch (e) {
           return Boom.internal(e.message)
         }
       },
-      /*
       payload: {
-        maxBytes: 209715200,
-        output: 'file',
-        parse: true
+        maxBytes: 209715200
+        // output: 'file',
+        // parse: true
       },
-      */
       response: {
         failAction: (request, h, source, error) => {
           return h.response({
