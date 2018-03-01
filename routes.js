@@ -45,6 +45,11 @@ module.exports = (Server) => {
           payloadType: 'form'
         }
       },
+      cors: {
+        origin: ['*'],
+        headers: ['Access-Control-Allow-Origin', 'Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type', 'CORELATION_ID'],
+        credentials: true
+      },
       validate: {
         payload: Schema.payload,
         failAction: (request, h, source, error) => {
