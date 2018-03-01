@@ -17,7 +17,7 @@ async function Upload (req, opts) {
   try {
     var base64data = Buffer.from(req.payload.file, 'binary')
     let filename = `${Uuid.v1()}.${req.payload.ext}`
-    await PutObject({
+    let fie = await PutObject({
       Bucket: 'porta-inversiones',
       Key: filename,
       Body: base64data,
@@ -68,9 +68,9 @@ module.exports = (Server) => {
         }
       },
       payload: {
-        maxBytes: 209715200
+        maxBytes: 209715200,
         // output: 'file',
-        // parse: true
+        parse: true
       },
       response: {
         failAction: (request, h, source, error) => {
